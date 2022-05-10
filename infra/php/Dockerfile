@@ -12,5 +12,6 @@ RUN apt-get update && \
   docker-php-ext-install intl pdo_mysql zip bcmath
 
 COPY ./php.ini /usr/local/etc/php/php.ini
+COPY ./zzz-www.conf /usr/local/etc/php-fpm.d/zzz-www.conf
 
 WORKDIR /data

@@ -1,6 +1,30 @@
 version: "3.9"
+
+volumes:
+  # php と nginx が unix socket 通信するための共有場所
+  php_socket:
+
 services:
+  # PHP, サービス名:app
   app:
     build: ./infra/php
     volumes:
+      # Laravel アプリ配置ディレクトリ
       - ./src:/data
+      # unix socket 通信で使用
+      - php_socket:/var/run/php-fpm
+
+  # nginx, サービス名:web
+  web:
+    image: nginx:stable
+    ports:
+      - 8080:80
+    volumes:
+      # Laravel アプリ配置ディレクトリ
+      - ./src:/data
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./infra/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+      # unix socket 通信で使用
+      - php_socket:/var/run/php-fpm
+    working_dir: /data
+
